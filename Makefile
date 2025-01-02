@@ -7,7 +7,7 @@ G++64 = x86_64-w64-mingw32-g++
 GCC32 = i686-w64-mingw32-gcc
 GCC64 = x86_64-w64-mingw32-gcc
 
-G++FLAGS = -std=c++11
+G++FLAGS = -std=c++14
 GCCFLAGS = -std=c11
 LDFLAGS = -lpthread -static -static-libgcc -static-libstdc++
 
