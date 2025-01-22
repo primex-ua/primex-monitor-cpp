@@ -1,6 +1,6 @@
 #ifndef SEED_H
 #define SEED_H
 
-void seed();
+void addProduct();
 
 #endif // !SEED_H

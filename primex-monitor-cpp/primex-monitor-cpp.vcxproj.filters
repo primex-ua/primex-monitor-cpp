@@ -21,9 +21,6 @@
     <ClCompile Include="sqlite-db.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="data-processor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="INIReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -39,17 +36,11 @@
     <ClCompile Include="Cursor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="productsToJson.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sendData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="data-processor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="sqlite-db.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -66,9 +57,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Cursor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="productsToJson.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="json.hpp">
