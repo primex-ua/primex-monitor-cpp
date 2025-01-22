@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.35431.46
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "primex-monitor-cpp", "primex-monitor-cpp\primex-monitor-cpp.vcxproj", "{9B5ED651-A19B-4C55-891B-DB9D4194FADE}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "utils", "utils\utils.vcxproj", "{911CF8F8-2C0E-4AAB-8D03-3CD9C4281151}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "seed", "seed\seed.vcxproj", "{911CF8F8-2C0E-4AAB-8D03-3CD9C4281151}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
