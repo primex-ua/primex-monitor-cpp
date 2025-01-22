@@ -24,8 +24,8 @@ void SQLiteDB::createTableIfNotExists() {
 			"press"					INTEGER,
 			"total_weight"			REAL NOT NULL,
 			"moisture_content"		REAL,
-			"produced_amount"		REAL,
-			"produced_units"		TEXT,
+			"output_value"			REAL,
+			"output_units"			TEXT,
 			"water_weight"			REAL NOT NULL,
 			"component_1_weight"	REAL,
 			"component_1_name"		TEXT,
@@ -40,7 +40,7 @@ void SQLiteDB::createTableIfNotExists() {
 			"component_6_weight"	REAL,
 			"component_6_name"		TEXT,
 			PRIMARY KEY("id" AUTOINCREMENT)
-		)
+		);
     )";
 
 	char *errMsg = nullptr;

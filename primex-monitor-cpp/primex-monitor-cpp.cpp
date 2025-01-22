@@ -31,9 +31,9 @@ int main() {
 			'press', products.press,
 			'totalWeight', products.total_weight,
 			'moistureContent', products.moisture_content,
-			'produced', json_object(
-				'amount', products.produced_amount,
-				'units', products.produced_units
+			'output', json_object(
+				'value', products.output_value,
+				'units', products.output_units
 			),
 			'components', json_group_array(
 				json_object(
@@ -121,9 +121,9 @@ int main() {
 			'press', products.press,
 			'totalWeight', products.total_weight,
 			'moistureContent', products.moisture_content,
-			'produced', json_object(
-				'amount', products.produced_amount,
-				'units', products.produced_units
+			'output', json_object(
+				'value', products.output_value,
+				'units', products.output_units
 			),
 			'components', json_group_array(
 				json_object(

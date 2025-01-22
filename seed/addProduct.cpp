@@ -76,8 +76,8 @@ int insertProduct(sqlite3 *db, json product)
 			press,
 			total_weight,
 			moisture_content,
-			produced_amount,
-			produced_units,
+			output_value,
+			output_units,
 			water_weight,
 			component_1_weight,
 			component_1_name,
@@ -98,8 +98,8 @@ int insertProduct(sqlite3 *db, json product)
 			?,	-- press
 			?,	-- total_weight
 			?,	-- moisture_content
-			?,	-- produced_amount
-			?,	-- produced_units
+			?,	-- output_value
+			?,	-- output_units
 			?,	-- water_weight
 			?,	-- component_1_weight
 			?,	-- component_1_name
@@ -139,9 +139,9 @@ int insertProduct(sqlite3 *db, json product)
 	else {
 		sqlite3_bind_null(stmt, 5);
 	}
-	if (product.contains("produced_amount") && product.contains("produced_units")) {
-		sqlite3_bind_double(stmt, 6, product["produced_amount"]);
-		sqlite3_bind_text(stmt, 7, product["produced_units"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
+	if (product.contains("output_value") && product.contains("output_units")) {
+		sqlite3_bind_double(stmt, 6, product["output_value"]);
+		sqlite3_bind_text(stmt, 7, product["output_units"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
 	}
 	else {
 		sqlite3_bind_null(stmt, 6);
@@ -277,8 +277,8 @@ json generateProduct()
 	if (!isBackupRecord) {
 		product["press"] = (int)getRandomNumber(1, 5, 0);
 		product["moisture_content"] = getRandomNumber(1, 20, 2);
-		product["produced_amount"] = round((totalWeight / specificWeight) * 100.0) / 100.0;
-		product["produced_units"] = "пог.м";
+		product["output_value"] = round((totalWeight / specificWeight) * 100.0) / 100.0;
+		product["output_units"] = "пог.м";
 	}
 
 	return product;
