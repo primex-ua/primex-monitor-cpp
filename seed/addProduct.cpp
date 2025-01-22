@@ -150,7 +150,7 @@ int insertProduct(sqlite3 *db, json product)
 	sqlite3_bind_double(stmt, 8, product["water_weight"]);
 	if (product.contains("component_1_weight") && product.contains("component_1_name")) {
 		sqlite3_bind_double(stmt, 9, product["component_1_weight"]);
-		sqlite3_bind_text(stmt, 10, product["component_3_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
+		sqlite3_bind_text(stmt, 10, product["component_1_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
 	}
 	else {
 		sqlite3_bind_null(stmt, 9);
