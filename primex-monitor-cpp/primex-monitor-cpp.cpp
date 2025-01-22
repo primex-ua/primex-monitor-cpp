@@ -21,6 +21,8 @@ int main() {
 	Env& env = Env::getEnv();
 	SQLiteDB db(env.getDbPath());
 
+	db.createTableIfNotExists();
+
 	string sqlQueryProductsByCursor = R"(
 		SELECT json_object(
 			'mixedAt', products.mixed_at,
@@ -200,8 +202,6 @@ int main() {
 		ORDER BY products.mixed_at ASC, products.line_name ASC;
 	)";
 	sqlite3_stmt* stmtByPeriod = db.prepareStmt(sqlQueryProductsByPeriod.c_str());
-
-	db.createTableIfNotExists();
 
 	while (true) {
 		cout << "\n=======================================================\n" << endl;
