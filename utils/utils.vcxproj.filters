@@ -15,12 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="utils.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="seed.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\primex-monitor-cpp\ini.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -30,11 +24,14 @@
     <ClCompile Include="..\primex-monitor-cpp\path.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="seed.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="addProduct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="seed.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\primex-monitor-cpp\ini.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -42,6 +39,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\primex-monitor-cpp\path.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\primex-monitor-cpp\json.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="addProduct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

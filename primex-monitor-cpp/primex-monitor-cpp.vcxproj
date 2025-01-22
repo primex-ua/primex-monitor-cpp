@@ -164,25 +164,21 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Cursor.cpp" />
-    <ClCompile Include="data-processor.cpp" />
     <ClCompile Include="Env.cpp" />
     <ClCompile Include="ini.c" />
     <ClCompile Include="INIReader.cpp" />
     <ClCompile Include="path.cpp" />
     <ClCompile Include="primex-monitor-cpp.cpp" />
-    <ClCompile Include="productsToJson.cpp" />
     <ClCompile Include="sendData.cpp" />
     <ClCompile Include="sqlite-db.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cursor.h" />
-    <ClInclude Include="data-processor.h" />
     <ClInclude Include="Env.h" />
     <ClInclude Include="ini.h" />
     <ClInclude Include="INIReader.h" />
     <ClInclude Include="json.hpp" />
     <ClInclude Include="path.h" />
-    <ClInclude Include="productsToJson.h" />
     <ClInclude Include="sendData.h" />
     <ClInclude Include="sqlite-db.h" />
   </ItemGroup>

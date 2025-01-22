@@ -16,49 +16,31 @@ SQLiteDB::~SQLiteDB() {
 
 void SQLiteDB::createTableIfNotExists() {
 	const char *sqlCreateTables = R"(
-        CREATE TABLE IF NOT EXISTS products (
-            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-            mixed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-            press INTEGER,
-            name TEXT NOT NULL,
-            component_1 REAL,
-            component_2 REAL,
-            component_3 REAL,
-            component_4 REAL,
-            component_5 REAL,
-            component_6 REAL,
-            water REAL NOT NULL,
-            total_weight REAL NOT NULL,
-            specific_weight REAL,
-            moisture_content REAL,
-            mode TEXT CHECK (mode IN ('auto', 'manual'))
-        );
-
-        CREATE TABLE IF NOT EXISTS component_names ( 
-            component_1_name TEXT,
-            component_2_name TEXT,
-            component_3_name TEXT,
-            component_4_name TEXT,
-            component_5_name TEXT,
-            component_6_name TEXT
-        );
-
-		INSERT INTO component_names (
-			component_1_name,
-			component_2_name,
-			component_3_name,
-			component_4_name,
-			component_5_name,
-			component_6_name
+        CREATE TABLE IF NOT EXISTS "products" (
+			"id"					INTEGER NOT NULL,
+			"mixed_at"				TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			"name"					TEXT NOT NULL,
+			"line_name"				TEXT,
+			"press"					INTEGER,
+			"total_weight"			REAL NOT NULL,
+			"moisture_content"		REAL,
+			"produced_amount"		REAL,
+			"produced_units"		TEXT,
+			"water_weight"			REAL NOT NULL,
+			"component_1_weight"	REAL,
+			"component_1_name"		TEXT,
+			"component_2_weight"	REAL,
+			"component_2_name"		TEXT,
+			"component_3_weight"	REAL,
+			"component_3_name"		TEXT,
+			"component_4_weight"	REAL,
+			"component_4_name"		TEXT,
+			"component_5_weight"	REAL,
+			"component_5_name"		TEXT,
+			"component_6_weight"	REAL,
+			"component_6_name"		TEXT,
+			PRIMARY KEY("id" AUTOINCREMENT)
 		)
-		SELECT 
-			'Відсів',
-			'Пісок',
-			'Щебінь',
-			'Щебінь 2',
-			'Цемент',
-			'Хім. доб.'
-		WHERE NOT EXISTS (SELECT 1 FROM component_names);
     )";
 
 	char *errMsg = nullptr;
@@ -76,6 +58,7 @@ sqlite3_stmt* SQLiteDB::prepareStmt(const char* sql) {
 	int rc = sqlite3_prepare_v2(db_, sql, -1, &stmt, nullptr);
 
 	if (rc != SQLITE_OK) {
+		std::cout << std::string(sqlite3_errmsg(db_)) << std::endl;
 		throw std::runtime_error("Failed to prepare statement: " + std::string(sqlite3_errmsg(db_)));
 	}
 

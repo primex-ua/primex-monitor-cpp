@@ -2,12 +2,15 @@
 #define CURSOR_H
 
 #include <string>
+#include "json.hpp"
+
+using namespace std;
+using json = nlohmann::json;
 
 class Cursor {
 public:
-	static int setCursor(std::string cursor);
-	static std::string getCursor();
-	static std::string getStartingTimestamp();
+	static int setCursor(json cursor);
+	static json getCursor();
 };
 
 #endif // !CURSOR_H
