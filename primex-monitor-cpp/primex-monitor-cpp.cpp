@@ -31,6 +31,7 @@ int main() {
 			'press', products.press,
 			'totalWeight', products.total_weight,
 			'moistureContent', products.moisture_content,
+			'temperature', products.temperature,
 			'output', CASE 
 				WHEN products.output_value IS NULL OR products.output_units IS NULL THEN NULL
 				ELSE json_object(
@@ -41,7 +42,8 @@ int main() {
 			'components', json_group_array(
 				json_object(
 					'name', components.name,
-					'value', components.value
+					'value', components.value,
+					'source', components.source
 				)
 			)
 		) AS product
@@ -49,6 +51,7 @@ int main() {
 		JOIN (
 			SELECT 
 				products.id AS product_id,
+				1 AS source,
 				products.component_1_name AS name, 
 				products.component_1_weight AS value
 			FROM products
@@ -58,6 +61,7 @@ int main() {
 
 			SELECT 
 				products.id AS product_id,
+				2 AS source,
 				products.component_2_name AS name, 
 				products.component_2_weight AS value
 			FROM products
@@ -67,6 +71,7 @@ int main() {
 
 			SELECT 
 				products.id AS product_id,
+				3 AS source,
 				products.component_3_name AS name, 
 				products.component_3_weight AS value
 			FROM products
@@ -76,6 +81,7 @@ int main() {
 
 			SELECT 
 				products.id AS product_id,
+				4 AS source,
 				products.component_4_name AS name, 
 				products.component_4_weight AS value
 			FROM products
@@ -85,6 +91,7 @@ int main() {
 
 			SELECT 
 				products.id AS product_id,
+				5 AS source,
 				products.component_5_name AS name, 
 				products.component_5_weight AS value
 			FROM products
@@ -94,6 +101,7 @@ int main() {
 
 			SELECT 
 				products.id AS product_id,
+				6 AS source,
 				products.component_6_name AS name, 
 				products.component_6_weight AS value
 			FROM products
@@ -103,6 +111,7 @@ int main() {
 
 			SELECT 
 				products.id AS product_id,
+				NULL AS source,
 				'Вода' AS name, 
 				products.water_weight AS value
 			FROM products
@@ -124,6 +133,7 @@ int main() {
 			'press', products.press,
 			'totalWeight', products.total_weight,
 			'moistureContent', products.moisture_content,
+			'temperature', products.temperature,
 			'output', CASE 
 				WHEN products.output_value IS NULL OR products.output_units IS NULL THEN NULL
 				ELSE json_object(
@@ -134,7 +144,8 @@ int main() {
 			'components', json_group_array(
 				json_object(
 					'name', components.name,
-					'value', components.value
+					'value', components.value,
+					'source', components.source
 				)
 			)
 		) AS product
@@ -142,6 +153,7 @@ int main() {
 		JOIN (
 			SELECT 
 				products.id AS product_id,
+				1 AS source,
 				products.component_1_name AS name, 
 				products.component_1_weight AS value
 			FROM products
@@ -151,6 +163,7 @@ int main() {
 
 			SELECT 
 				products.id AS product_id,
+				2 AS source,
 				products.component_2_name AS name, 
 				products.component_2_weight AS value
 			FROM products
@@ -160,6 +173,7 @@ int main() {
 
 			SELECT 
 				products.id AS product_id,
+				3 AS source,
 				products.component_3_name AS name, 
 				products.component_3_weight AS value
 			FROM products
@@ -169,6 +183,7 @@ int main() {
 
 			SELECT 
 				products.id AS product_id,
+				4 AS source,
 				products.component_4_name AS name, 
 				products.component_4_weight AS value
 			FROM products
@@ -178,6 +193,7 @@ int main() {
 
 			SELECT 
 				products.id AS product_id,
+				5 AS source,
 				products.component_5_name AS name, 
 				products.component_5_weight AS value
 			FROM products
@@ -187,6 +203,7 @@ int main() {
 
 			SELECT 
 				products.id AS product_id,
+				6 AS source,
 				products.component_6_name AS name, 
 				products.component_6_weight AS value
 			FROM products
@@ -196,6 +213,7 @@ int main() {
 
 			SELECT 
 				products.id AS product_id,
+				NULL AS source,
 				'Вода' AS name, 
 				products.water_weight AS value
 			FROM products

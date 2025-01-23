@@ -24,6 +24,7 @@ void SQLiteDB::createTableIfNotExists() {
 			"press"					INTEGER,
 			"total_weight"			REAL NOT NULL,
 			"moisture_content"		REAL,
+			"temperature"			REAL,
 			"output_value"			REAL,
 			"output_units"			TEXT,
 			"water_weight"			REAL NOT NULL,
