@@ -31,10 +31,13 @@ int main() {
 			'press', products.press,
 			'totalWeight', products.total_weight,
 			'moistureContent', products.moisture_content,
-			'output', json_object(
-				'value', products.output_value,
-				'units', products.output_units
-			),
+			'output', CASE 
+				WHEN products.output_value IS NULL OR products.output_units IS NULL THEN NULL
+				ELSE json_object(
+					'value', products.output_value,
+					'units', products.output_units
+				)
+			END,
 			'components', json_group_array(
 				json_object(
 					'name', components.name,
@@ -121,10 +124,13 @@ int main() {
 			'press', products.press,
 			'totalWeight', products.total_weight,
 			'moistureContent', products.moisture_content,
-			'output', json_object(
-				'value', products.output_value,
-				'units', products.output_units
-			),
+			'output', CASE 
+				WHEN products.output_value IS NULL OR products.output_units IS NULL THEN NULL
+				ELSE json_object(
+					'value', products.output_value,
+					'units', products.output_units
+				)
+			END,
 			'components', json_group_array(
 				json_object(
 					'name', components.name,
