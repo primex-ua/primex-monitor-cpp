@@ -77,8 +77,7 @@ int insertProduct(sqlite3 *db, json product)
 			total_weight,
 			moisture_content,
 			temperature,
-			output_value,
-			output_units,
+			output,
 			water_weight,
 			component_1_weight,
 			component_1_name,
@@ -100,8 +99,7 @@ int insertProduct(sqlite3 *db, json product)
 			?,	-- total_weight
 			?,	-- moisture_content
 			?,	-- temperature
-			?,	-- output_value
-			?,	-- output_units
+			?,	-- output
 			?,	-- water_weight
 			?,	-- component_1_weight
 			?,	-- component_1_name
@@ -153,69 +151,67 @@ int insertProduct(sqlite3 *db, json product)
 		sqlite3_bind_null(stmt, 6);
 	}
 	
-	if (product.contains("output_value") && product.contains("output_units")) {
-		sqlite3_bind_double(stmt, 7, product["output_value"]);
-		sqlite3_bind_text(stmt, 8, product["output_units"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
+	if (product.contains("output")) {
+		sqlite3_bind_double(stmt, 7, product["output"]);
 	}
 	else {
 		sqlite3_bind_null(stmt, 7);
-		sqlite3_bind_null(stmt, 8);
 	}
 	
-	sqlite3_bind_double(stmt, 9, product["water_weight"]);
+	sqlite3_bind_double(stmt, 8, product["water_weight"]);
 	
 	if (product.contains("component_1_weight") && product.contains("component_1_name")) {
-		sqlite3_bind_double(stmt, 10, product["component_1_weight"]);
-		sqlite3_bind_text(stmt, 11, product["component_1_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
+		sqlite3_bind_double(stmt, 9, product["component_1_weight"]);
+		sqlite3_bind_text(stmt, 10, product["component_1_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
 	}
 	else {
+		sqlite3_bind_null(stmt, 9);
 		sqlite3_bind_null(stmt, 10);
-		sqlite3_bind_null(stmt, 11);
 	}
 	
 	if (product.contains("component_2_weight") && product.contains("component_2_name")) {
-		sqlite3_bind_double(stmt, 12, product["component_2_weight"]);
-		sqlite3_bind_text(stmt, 13, product["component_2_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
+		sqlite3_bind_double(stmt, 11, product["component_2_weight"]);
+		sqlite3_bind_text(stmt, 12, product["component_2_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
 	}
 	else {
+		sqlite3_bind_null(stmt, 11);
 		sqlite3_bind_null(stmt, 12);
-		sqlite3_bind_null(stmt, 13);
 	}
 	
 	if (product.contains("component_3_weight") && product.contains("component_3_name")) {
-		sqlite3_bind_double(stmt, 14, product["component_3_weight"]);
-		sqlite3_bind_text(stmt, 15, product["component_3_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
+		sqlite3_bind_double(stmt, 13, product["component_3_weight"]);
+		sqlite3_bind_text(stmt, 14, product["component_3_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
 	}
 	else {
+		sqlite3_bind_null(stmt, 13);
 		sqlite3_bind_null(stmt, 14);
-		sqlite3_bind_null(stmt, 15);
 	}
 	
 	if (product.contains("component_4_weight") && product.contains("component_4_name")) {
-		sqlite3_bind_double(stmt, 16, product["component_4_weight"]);
-		sqlite3_bind_text(stmt, 17, product["component_4_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
+		sqlite3_bind_double(stmt, 15, product["component_4_weight"]);
+		sqlite3_bind_text(stmt, 16, product["component_4_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
 	}
 	else {
+		sqlite3_bind_null(stmt, 15);
 		sqlite3_bind_null(stmt, 16);
-		sqlite3_bind_null(stmt, 17);
 	}
 	
 	if (product.contains("component_5_weight") && product.contains("component_5_name")) {
-		sqlite3_bind_double(stmt, 18, product["component_5_weight"]);
-		sqlite3_bind_text(stmt, 19, product["component_5_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
+		sqlite3_bind_double(stmt, 17, product["component_5_weight"]);
+		sqlite3_bind_text(stmt, 18, product["component_5_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
 	}
 	else {
+		sqlite3_bind_null(stmt, 17);
 		sqlite3_bind_null(stmt, 18);
-		sqlite3_bind_null(stmt, 19);
 	}
 	
 	if (product.contains("component_6_weight") && product.contains("component_6_name")) {
-		sqlite3_bind_double(stmt, 20, product["component_6_weight"]);
-		sqlite3_bind_text(stmt, 21, product["component_6_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
+		sqlite3_bind_double(stmt, 19, product["component_6_weight"]);
+		sqlite3_bind_text(stmt, 20, product["component_6_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
 	}
 	else {
+		sqlite3_bind_null(stmt, 19);
 		sqlite3_bind_null(stmt, 20);
-		sqlite3_bind_null(stmt, 21);
 	}
 
 	rc = sqlite3_step(stmt);
@@ -265,8 +261,8 @@ json generateProduct()
 	components[0] = mixerVolume * getRandomNumber(60.0, 100.0, 1);  // вода
 	components[1] = mixerVolume * getRandomNumber(150.0, 200.0, 1); // відсів
 	components[2] = mixerVolume * getRandomNumber(350.0, 450.0, 1); // пісок
-	components[3] = mixerVolume * getRandomNumber(150.0, 200.0, 1); // щебень
-	components[4] = mixerVolume * getRandomNumber(150.0, 200.0, 1); // щебень 2
+	components[3] = mixerVolume * getRandomNumber(150.0, 200.0, 1); // щебінь
+	components[4] = mixerVolume * getRandomNumber(150.0, 200.0, 1); // щебінь 2
 	components[5] = mixerVolume * getRandomNumber(150.0, 200.0, 1); // цемент
 	components[6] = mixerVolume * getRandomNumber(2.0, 15.0, 2);    // хім. добавки
 
@@ -287,9 +283,9 @@ json generateProduct()
 	product["component_2_weight"] = components[2];
 	product["component_2_name"] = "Пісок";
 	product["component_3_weight"] = components[3];
-	product["component_3_name"] = "Щебень";
+	product["component_3_name"] = "щебінь";
 	product["component_4_weight"] = components[4];
-	product["component_4_name"] = "Щебень 2";
+	product["component_4_name"] = "щебінь 2";
 	product["component_5_weight"] = components[5];
 	product["component_5_name"] = "Цемент";
 	product["component_6_weight"] = components[6];
@@ -299,8 +295,7 @@ json generateProduct()
 		product["press"] = (int)getRandomNumber(1, 5, 0);
 		product["moisture_content"] = getRandomNumber(1, 20, 2);
 		product["temperature"] = getRandomNumber(0, 40, 1);
-		product["output_value"] = round((totalWeight / specificWeight) * 100.0) / 100.0;
-		product["output_units"] = "пог.м";
+		product["output"] = round((totalWeight / specificWeight) * 100.0) / 100.0;
 	}
 
 	return product;
