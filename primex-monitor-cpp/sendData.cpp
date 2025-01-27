@@ -2,7 +2,7 @@
 #include <iostream>
 #include <curl/curl.h>
 
-bool sendData(const std::string& url, const std::string& apiKey, const std::string& jsonString) {
+bool sendData(const std::string& url, const std::string& apiKey, const std::string& systemUUID, const std::string& jsonString) {
 	CURL *curl;
 	CURLcode res;
 	long httpResponseCode = 0;
@@ -13,7 +13,7 @@ bool sendData(const std::string& url, const std::string& apiKey, const std::stri
 	if (curl) {
 		struct curl_slist *headers = NULL;
 		headers = curl_slist_append(headers, "Content-Type: application/json");
-		std::string cookieHeader = "X-API-KEY=" + apiKey;
+		std::string cookieHeader = "X-API-KEY=" + apiKey + "; X-SYSTEM-UUID=" + systemUUID;
 
 		// curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);

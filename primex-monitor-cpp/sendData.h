@@ -5,6 +5,6 @@
 
 #include <string>
 
-bool sendData(const std::string& url, const std::string& apiKey, const std::string& jsonString);
+bool sendData(const std::string& url, const std::string& apiKey, const std::string& systemUUID, const std::string& jsonString);
 
 #endif // !SEND_DATA_H

@@ -39,6 +39,9 @@
     <ClCompile Include="sendData.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="getSystemUUID.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sqlite-db.h">
@@ -63,6 +66,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="sendData.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="getSystemUUID.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

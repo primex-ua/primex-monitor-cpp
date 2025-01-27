@@ -8,6 +8,7 @@
 #include "Env.h"
 #include "sendData.h"
 #include "json.hpp"
+#include "getSystemUUID.h"
 
 using namespace std;
 using json = nlohmann::json;
@@ -254,7 +255,9 @@ int main() {
 			nlohmann::json postRequestData;
 			postRequestData["data"] = products;
 
-			bool isRequestSuccess = sendData(env.getApiUrl(), env.getApiKey(), postRequestData.dump());
+			string systemUUID = GetSystemUUID();
+
+			bool isRequestSuccess = sendData(env.getApiUrl(), env.getApiKey(), systemUUID, postRequestData.dump());
 
 			if (isRequestSuccess) {
 				cout << endl;

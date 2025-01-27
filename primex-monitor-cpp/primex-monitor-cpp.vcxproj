@@ -165,6 +165,7 @@
   <ItemGroup>
     <ClCompile Include="Cursor.cpp" />
     <ClCompile Include="Env.cpp" />
+    <ClCompile Include="getSystemUUID.cpp" />
     <ClCompile Include="ini.c" />
     <ClCompile Include="INIReader.cpp" />
     <ClCompile Include="path.cpp" />
@@ -175,6 +176,7 @@
   <ItemGroup>
     <ClInclude Include="Cursor.h" />
     <ClInclude Include="Env.h" />
+    <ClInclude Include="getSystemUUID.h" />
     <ClInclude Include="ini.h" />
     <ClInclude Include="INIReader.h" />
     <ClInclude Include="json.hpp" />
