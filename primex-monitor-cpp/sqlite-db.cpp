@@ -18,7 +18,7 @@ void SQLiteDB::createTableIfNotExists() {
 	const char *sqlCreateTables = R"(
         CREATE TABLE IF NOT EXISTS "products" (
 			"id"					INTEGER NOT NULL,
-			"mixed_at"				TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+			"mixed_at"				TIMESTAMP NOT NULL,
 			"name"					TEXT NOT NULL,
 			"line_name"				TEXT,
 			"press"					INTEGER,

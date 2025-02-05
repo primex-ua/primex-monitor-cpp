@@ -90,7 +90,8 @@ int insertProduct(sqlite3 *db, json product)
 			component_5_weight,
 			component_5_name,
 			component_6_weight,
-			component_6_name
+			component_6_name,
+			mixed_at
 		)
 		VALUES (
 			?,	-- name
@@ -112,7 +113,8 @@ int insertProduct(sqlite3 *db, json product)
 			?,	-- component_5_weight
 			?,	-- component_5_name
 			?,	-- component_6_weight
-			?	-- component_6_name
+			?,	-- component_6_name
+			DATETIME('now', 'localtime')
 		);
 	)";
 
@@ -273,7 +275,6 @@ json generateProduct()
 	}
 	totalWeight = round(totalWeight * 10.0) / 10.0;
 
-	product["mixed_at"] = "CURRENT_TIMESTAMP";
 	product["name"] = names[index];
 	product["line_name"] = lineNames[(int)getRandomNumber(0, lineNames.size() -1, 0)];
 	product["total_weight"] = totalWeight;
