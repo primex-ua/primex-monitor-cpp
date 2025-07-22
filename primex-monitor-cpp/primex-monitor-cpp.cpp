@@ -112,7 +112,7 @@ int main() {
 			if (isRequestSuccess) {
 				cout << endl;
 
-				string latestTimestamp = cursor["timestamp"].get<string>();
+				string latestTimestamp = cursor["hasCursor"].get<bool>() ? cursor["timestamp"].get<string>() : "0000-00-00T00:00:00Z";
 
 				if (!products.empty() && !products.back()["mixedAt"].is_null()) {
 					string productTimestamp = products.back()["mixedAt"].get<string>();
