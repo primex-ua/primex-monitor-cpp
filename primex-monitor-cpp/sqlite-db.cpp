@@ -18,7 +18,7 @@ void SQLiteDB::createTableIfNotExists() {
 	const char *sqlCreateTables = R"(
         CREATE TABLE IF NOT EXISTS "products" (
 			"id"					INTEGER NOT NULL,
-			"mixed_at"				TIMESTAMP NOT NULL,
+			"mixed_at"				TIMESTAMP NOT NULL DEFAULT (DATETIME('now', 'localtime')),
 			"name"					TEXT NOT NULL,
 			"line_name"				TEXT,
 			"press"					INTEGER,
@@ -39,6 +39,22 @@ void SQLiteDB::createTableIfNotExists() {
 			"component_5_name"		TEXT,
 			"component_6_weight"	REAL,
 			"component_6_name"		TEXT,
+			PRIMARY KEY("id" AUTOINCREMENT)
+		);
+
+		CREATE TABLE IF NOT EXISTS "components" (
+			"id"			INTEGER NOT NULL,
+			"updated_at"	TIMESTAMP NOT NULL DEFAULT (DATETIME('now', 'localtime')),
+			"name"			TEXT NOT NULL UNIQUE,
+			"weight"		REAL NOT NULL,
+			PRIMARY KEY("id" AUTOINCREMENT)
+		);
+
+		CREATE TABLE IF NOT EXISTS "component_transactions" (
+			"id"				INTEGER NOT NULL,
+			"timestamp"			TIMESTAMP NOT NULL DEFAULT (DATETIME('now', 'localtime')),
+			"component_name"	TEXT NOT NULL,
+			"amount"			REAL NOT NULL,
 			PRIMARY KEY("id" AUTOINCREMENT)
 		);
     )";

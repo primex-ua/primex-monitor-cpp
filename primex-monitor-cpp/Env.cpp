@@ -5,7 +5,7 @@
 #include <memory>
 
 std::string exeDir = getExecutableDir();
-std::string configPath = exeDir + "\\config.ini";
+std::string configPath = exeDir + "\\primex-monitor-config.ini";
 
 Env* Env::instance = nullptr;
 
@@ -16,18 +16,18 @@ Env::Env() : reader(configPath) {
 	}
 
 	if (!reader.HasValue("database", "path")) {
-		throw std::runtime_error("Database path not specified in config.ini");
+		throw std::runtime_error("Database path not specified in primex-monitor-config.ini");
 	}
 
 	if (!reader.HasValue("api", "url")) {
-		throw std::runtime_error("API URL not specified in config.ini");
+		throw std::runtime_error("API URL not specified in primex-monitor-config.ini");
 	}
 	
 	if (!reader.HasValue("api", "key")) {
-		throw std::runtime_error("API key not specified in config.ini");
+		throw std::runtime_error("API key not specified in primex-monitor-config.ini");
 	}
 
-	std::cout << "Config loaded from 'config.ini'" << std::endl;
+	std::cout << "Config loaded from 'primex-monitor-config.ini'" << std::endl;
 	std::cout << "dbPath = " << reader.Get("database", "path", "UNDEFINED") << std::endl;
 	std::cout << "apiUrl = " << reader.Get("api", "url", "UNDEFINED") << std::endl;
 	std::cout << "apiKey = " << reader.Get("api", "key", "UNDEFINED") << std::endl;

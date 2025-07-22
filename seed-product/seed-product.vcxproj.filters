@@ -15,63 +15,36 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="primex-monitor-cpp.cpp">
+    <ClCompile Include="..\primex-monitor-cpp\ini.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sqlite-db.cpp">
+    <ClCompile Include="..\primex-monitor-cpp\INIReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="INIReader.cpp">
+    <ClCompile Include="..\primex-monitor-cpp\path.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ini.c">
+    <ClCompile Include="seed-product.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="path.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Env.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Cursor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sendData.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="getSystemUUID.cpp">
+    <ClCompile Include="addProduct.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="sqlite-db.h">
+    <ClInclude Include="..\primex-monitor-cpp\ini.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="INIReader.h">
+    <ClInclude Include="..\primex-monitor-cpp\INIReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ini.h">
+    <ClInclude Include="..\primex-monitor-cpp\path.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="path.h">
+    <ClInclude Include="..\primex-monitor-cpp\json.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Env.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Cursor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="json.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sendData.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="getSystemUUID.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SQLQueries.h">
+    <ClInclude Include="addProduct.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

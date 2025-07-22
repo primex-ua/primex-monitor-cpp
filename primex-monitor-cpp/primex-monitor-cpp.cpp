@@ -9,6 +9,7 @@
 #include "sendData.h"
 #include "json.hpp"
 #include "getSystemUUID.h"
+#include "SQLQueries.h"
 
 using namespace std;
 using json = nlohmann::json;
@@ -24,236 +25,85 @@ int main() {
 
 	db.createTableIfNotExists();
 
-	string sqlQueryProductsByCursor = R"(
-		SELECT json_object(
-			'mixedAt', products.mixed_at,
-			'name', products.name,
-			'lineName', products.line_name,
-			'press', products.press,
-			'totalWeight', products.total_weight,
-			'moistureContent', products.moisture_content,
-			'temperature', products.temperature,
-			'output', products.output,
-			'components', json_group_array(
-				json_object(
-					'name', components.name,
-					'value', components.value,
-					'source', components.source
-				)
-			)
-		) AS product
-		FROM products
-		JOIN (
-			SELECT 
-				products.id AS product_id,
-				1 AS source,
-				products.component_1_name AS name, 
-				products.component_1_weight AS value
-			FROM products
-			WHERE products.component_1_name IS NOT NULL AND products.component_1_weight IS NOT NULL
+	sqlite3_stmt* stmtComponents = db.prepareStmt(SQL_SELECT_COMPONENTS.c_str());
 
-			UNION ALL
+	sqlite3_stmt* stmtQueryProducts = db.prepareStmt(SQL_SELECT_PRODUCTS.c_str());
 
-			SELECT 
-				products.id AS product_id,
-				2 AS source,
-				products.component_2_name AS name, 
-				products.component_2_weight AS value
-			FROM products
-			WHERE products.component_2_name IS NOT NULL AND products.component_2_weight IS NOT NULL
-
-			UNION ALL
-
-			SELECT 
-				products.id AS product_id,
-				3 AS source,
-				products.component_3_name AS name, 
-				products.component_3_weight AS value
-			FROM products
-			WHERE products.component_3_name IS NOT NULL AND products.component_3_weight IS NOT NULL
-
-			UNION ALL
-
-			SELECT 
-				products.id AS product_id,
-				4 AS source,
-				products.component_4_name AS name, 
-				products.component_4_weight AS value
-			FROM products
-			WHERE products.component_4_name IS NOT NULL AND products.component_4_weight IS NOT NULL
-
-			UNION ALL
-
-			SELECT 
-				products.id AS product_id,
-				5 AS source,
-				products.component_5_name AS name, 
-				products.component_5_weight AS value
-			FROM products
-			WHERE products.component_5_name IS NOT NULL AND products.component_5_weight IS NOT NULL
-
-			UNION ALL
-
-			SELECT 
-				products.id AS product_id,
-				6 AS source,
-				products.component_6_name AS name, 
-				products.component_6_weight AS value
-			FROM products
-			WHERE products.component_6_name IS NOT NULL AND products.component_6_weight IS NOT NULL
-
-			UNION ALL
-
-			SELECT 
-				products.id AS product_id,
-				7 AS source,
-				'Вода' AS name, 
-				products.water_weight AS value
-			FROM products
-			WHERE products.water_weight IS NOT NULL
-		) AS components
-		ON products.id = components.product_id
-		WHERE products.mixed_at > ? 
-		   OR (products.mixed_at = ? AND COALESCE(products.line_name, '') > COALESCE(?, ''))
-		GROUP BY products.id
-		ORDER BY products.mixed_at ASC, products.line_name ASC;
-	)";
-	sqlite3_stmt* stmtByCursor = db.prepareStmt(sqlQueryProductsByCursor.c_str());
-	
-	string sqlQueryProductsByPeriod = R"(
-		SELECT json_object(
-			'mixedAt', products.mixed_at,
-			'name', products.name,
-			'lineName', products.line_name,
-			'press', products.press,
-			'totalWeight', products.total_weight,
-			'moistureContent', products.moisture_content,
-			'temperature', products.temperature,
-			'output', products.output,
-			'components', json_group_array(
-				json_object(
-					'name', components.name,
-					'value', components.value,
-					'source', components.source
-				)
-			)
-		) AS product
-		FROM products
-		JOIN (
-			SELECT 
-				products.id AS product_id,
-				1 AS source,
-				products.component_1_name AS name, 
-				products.component_1_weight AS value
-			FROM products
-			WHERE products.component_1_name IS NOT NULL AND products.component_1_weight IS NOT NULL
-
-			UNION ALL
-
-			SELECT 
-				products.id AS product_id,
-				2 AS source,
-				products.component_2_name AS name, 
-				products.component_2_weight AS value
-			FROM products
-			WHERE products.component_2_name IS NOT NULL AND products.component_2_weight IS NOT NULL
-
-			UNION ALL
-
-			SELECT 
-				products.id AS product_id,
-				3 AS source,
-				products.component_3_name AS name, 
-				products.component_3_weight AS value
-			FROM products
-			WHERE products.component_3_name IS NOT NULL AND products.component_3_weight IS NOT NULL
-
-			UNION ALL
-
-			SELECT 
-				products.id AS product_id,
-				4 AS source,
-				products.component_4_name AS name, 
-				products.component_4_weight AS value
-			FROM products
-			WHERE products.component_4_name IS NOT NULL AND products.component_4_weight IS NOT NULL
-
-			UNION ALL
-
-			SELECT 
-				products.id AS product_id,
-				5 AS source,
-				products.component_5_name AS name, 
-				products.component_5_weight AS value
-			FROM products
-			WHERE products.component_5_name IS NOT NULL AND products.component_5_weight IS NOT NULL
-
-			UNION ALL
-
-			SELECT 
-				products.id AS product_id,
-				6 AS source,
-				products.component_6_name AS name, 
-				products.component_6_weight AS value
-			FROM products
-			WHERE products.component_6_name IS NOT NULL AND products.component_6_weight IS NOT NULL
-
-			UNION ALL
-
-			SELECT 
-				products.id AS product_id,
-				7 AS source,
-				'Вода' AS name, 
-				products.water_weight AS value
-			FROM products
-			WHERE products.water_weight IS NOT NULL
-		) AS components
-		ON products.id = components.product_id
-		WHERE products.mixed_at > DATETIME('now', ?) 
-		   OR (products.mixed_at = DATETIME('now', ?) AND COALESCE(products.line_name, '') > COALESCE(?, ''))
-		GROUP BY products.id
-		ORDER BY products.mixed_at ASC, products.line_name ASC;
-	)";
-	sqlite3_stmt* stmtByPeriod = db.prepareStmt(sqlQueryProductsByPeriod.c_str());
+	sqlite3_stmt* stmtQueryTransactions = db.prepareStmt(SQL_SELECT_TRANSACTIONS.c_str());
 
 	while (true) {
 		cout << "\n=======================================================\n" << endl;
 		cout << "Start reading from the database" << endl;
 
 		json cursor = Cursor::getCursor();
-		Table result;
+		Table productsResult;
+		Table componentsResult;
+		Table transactionsResult;
 		json products;
+		json components;
+		json transactions;
 
 		if (cursor["hasCursor"].get<bool>()) {
-			sqlite3_bind_text(stmtByCursor, 1, cursor["mixed_at"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
-			sqlite3_bind_text(stmtByCursor, 2, cursor["mixed_at"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
-			sqlite3_bind_text(stmtByCursor, 3, cursor["line_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
+			sqlite3_bind_text(stmtComponents, 1, cursor["timestamp"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
+			sqlite3_bind_text(stmtComponents, 2, cursor["timestamp"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
 
-			result = db.queryDatabase(stmtByCursor);
+			sqlite3_bind_text(stmtQueryProducts, 1, cursor["timestamp"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
+			sqlite3_bind_null(stmtQueryProducts, 2);
+
+			sqlite3_bind_text(stmtQueryTransactions, 1, cursor["timestamp"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
+			sqlite3_bind_null(stmtQueryTransactions, 2);
+
+			componentsResult = db.queryDatabase(stmtComponents);
+			productsResult = db.queryDatabase(stmtQueryProducts);
+			transactionsResult = db.queryDatabase(stmtQueryTransactions);
 		}
 		else {
 			string period = "-" + to_string(env.getSyncPeriodDays()) + " days";
-			sqlite3_bind_text(stmtByPeriod, 1, period.c_str(), -1, SQLITE_TRANSIENT);
-			sqlite3_bind_text(stmtByPeriod, 2, period.c_str(), -1, SQLITE_TRANSIENT);
-			sqlite3_bind_null(stmtByPeriod, 3);
 
-			result = db.queryDatabase(stmtByPeriod);
+			sqlite3_bind_null(stmtComponents, 1);
+			sqlite3_bind_null(stmtComponents, 2);
+
+			sqlite3_bind_null(stmtQueryProducts, 1);
+			sqlite3_bind_text(stmtQueryProducts, 2, period.c_str(), -1, SQLITE_TRANSIENT);
+
+			sqlite3_bind_null(stmtQueryTransactions, 1);
+			sqlite3_bind_text(stmtQueryTransactions, 2, period.c_str(), -1, SQLITE_TRANSIENT);
+
+			componentsResult = db.queryDatabase(stmtComponents);
+			productsResult = db.queryDatabase(stmtQueryProducts);
+			transactionsResult = db.queryDatabase(stmtQueryTransactions);
 		}
 
-		sqlite3_reset(stmtByCursor);
-		sqlite3_reset(stmtByPeriod);
+		sqlite3_reset(stmtComponents);
+		sqlite3_reset(stmtQueryProducts);
+		sqlite3_reset(stmtQueryTransactions);
 
-		cout << "Found " << result.size() << " new products" << endl;
+		cout << "Found " << componentsResult.size() << " components, " << productsResult.size() << " new products, " << transactionsResult.size() << " new transactions" << endl;
 
-		if (result.size() > 0) {
-			for (const Row& row: result) {
+
+		if (componentsResult.size() > 0 || productsResult.size() > 0 || transactionsResult.size() > 0) {
+			for (const Row& row : componentsResult) {
+				if (row.find("component") != row.end()) {
+					components.push_back(json::parse(row.at("component")));
+				}
+			}
+
+			for (const Row& row : productsResult) {
 				if (row.find("product") != row.end()) {
 					products.push_back(json::parse(row.at("product")));
 				}
 			}
 
+			for (const Row& row : transactionsResult) {
+				if (row.find("component_transaction") != row.end()) {
+					transactions.push_back(json::parse(row.at("component_transaction")));
+				}
+			}
+
 			nlohmann::json postRequestData;
-			postRequestData["data"] = products;
+			postRequestData["components"] = components;
+			postRequestData["products"] = products;
+			postRequestData["componentTransactions"] = transactions;
 
 			string systemUUID = GetSystemUUID();
 
@@ -261,23 +111,47 @@ int main() {
 
 			if (isRequestSuccess) {
 				cout << endl;
-				json lastProduct = products.back();
 
-				json cursor;
-				cursor["mixed_at"] = lastProduct["mixedAt"];
-				if (lastProduct.contains("lineName") && lastProduct["lineName"].is_string()) {
-					cursor["line_name"] = lastProduct["lineName"];
+				string latestTimestamp = cursor["timestamp"].get<string>();
+
+				if (!products.empty() && !products.back()["mixedAt"].is_null()) {
+					string productTimestamp = products.back()["mixedAt"].get<string>();
+					if (productTimestamp > latestTimestamp) {
+						latestTimestamp = productTimestamp;
+					}
 				}
 
-				Cursor::setCursor(cursor);
+				if (!transactions.empty() && !transactions.back()["timestamp"].is_null()) {
+					string transactionTimestamp = transactions.back()["timestamp"].get<string>();
+					if (transactionTimestamp > latestTimestamp) {
+						latestTimestamp = transactionTimestamp;
+					}
+				}
+
+				for (const auto& comp : components) {
+					if (!comp["updated_at"].is_null()) {
+						string componentTimestamp = comp["updated_at"].get<string>();
+						if (componentTimestamp > latestTimestamp) {
+							latestTimestamp = componentTimestamp;
+						}
+					}
+				}
+
+				if (!latestTimestamp.empty()) {
+					json newCursor;
+					newCursor["timestamp"] = latestTimestamp;
+					Cursor::setCursor(newCursor);
+				}
+
 			}
 		}
 
 		Sleep(10000);
 	}
 
-	sqlite3_finalize(stmtByCursor);
-	sqlite3_finalize(stmtByPeriod);
+	sqlite3_finalize(stmtComponents);
+	sqlite3_finalize(stmtQueryProducts);
+	sqlite3_finalize(stmtQueryTransactions);
 
 	return 0;
 }

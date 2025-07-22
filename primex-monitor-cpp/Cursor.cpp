@@ -8,10 +8,10 @@ using namespace std;
 using json = nlohmann::json;
 
 int Cursor::setCursor(json cursor) {
-	ofstream file("cursor.json");
+	ofstream file("primex-monitor-cursor.json");
 
 	if (!file) {
-		cerr << "Error opening file: cursor.json" << endl;
+		cerr << "Error opening file: primex-monitor-cursor.json" << endl;
 		return 1;
 	}
 
@@ -26,18 +26,18 @@ int Cursor::setCursor(json cursor) {
 
 json Cursor::getCursor() {
 	json cursor;
-	ifstream file("cursor.json");
+	ifstream file("primex-monitor-cursor.json");
 
 	if (!file) {
-		cout << "Error opening file: cursor.json" << endl;
+		cout << "Error opening file: primex-monitor-cursor.json" << endl;
 		return { {"hasCursor", false} };
 	}
 
 	cursor = json::parse(file);
-	cout << "Cursor read from cursor.json: " << cursor << endl;
+	cout << "Cursor read from primex-monitor-cursor.json: " << cursor << endl;
 
-	if (!cursor.contains("mixed_at") || !cursor.contains("line_name")) {
-		cout << "Error: cursor doesn't have mixed_at or line_name" << endl;
+	if (!cursor.contains("timestamp")) {
+		cout << "Error: cursor doesn't have timestamp" << endl;
 		return { {"hasCursor", false} };
 	}
 
