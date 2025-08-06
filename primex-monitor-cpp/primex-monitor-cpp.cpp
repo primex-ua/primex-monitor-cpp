@@ -10,6 +10,7 @@
 #include "json.hpp"
 #include "getSystemUUID.h"
 #include "SQLQueries.h"
+#include <curl/curl.h>
 
 using namespace std;
 using json = nlohmann::json;
@@ -19,6 +20,8 @@ int main() {
 
 	cout << "\n******************** Configuration ********************\n" << endl;
 	cout << "Configuration" << endl;
+
+	curl_global_init(CURL_GLOBAL_DEFAULT);
 
 	Env& env = Env::getEnv();
 	SQLiteDB db(env.getDbPath());
@@ -146,12 +149,18 @@ int main() {
 			}
 		}
 
+		components.clear();
+		products.clear();
+		transactions.clear();
+
 		Sleep(10000);
 	}
 
 	sqlite3_finalize(stmtComponents);
 	sqlite3_finalize(stmtQueryProducts);
 	sqlite3_finalize(stmtQueryTransactions);
+
+	curl_global_cleanup();
 
 	return 0;
 }
