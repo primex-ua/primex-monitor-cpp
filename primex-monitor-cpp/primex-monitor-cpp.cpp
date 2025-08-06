@@ -15,7 +15,7 @@
 using namespace std;
 using json = nlohmann::json;
 
-int main() {
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow) {
 	SetConsoleOutputCP(CP_UTF8);
 
 	cout << "\n******************** Configuration ********************\n" << endl;

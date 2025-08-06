@@ -93,13 +93,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0501;_DEBUG;_CONSOLE;OPENSSL_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0501;WIN32_LEAN_AND_MEAN;NOMINMAX;_DEBUG;_CONSOLE;OPENSSL_USE_STATIC_LIBS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>D:\lib-c++\sqlite-amalgamation-3210000;D:\lib-c++\curl-7.84.0\deps\include;D:\lib-c++\curl-7.84.0\builds\x86_$(Configuration)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>D:\lib-c++\sqlite-amalgamation-3210000\sqlite3.lib;D:\lib-c++\curl-7.84.0\deps\lib\libeay32.lib;D:\lib-c++\curl-7.84.0\deps\lib\ssleay32.lib;D:\lib-c++\curl-7.84.0\builds\x86_$(Configuration)\lib\libcurl_a.lib;ws2_32.lib;wldap32.lib;Advapi32.lib;User32.lib;Crypt32.lib;OLDNAMES.lib;Gdi32.lib;MSVCRTD.lib</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:LIBCMT; /NODEFAULTLIB:MSVCRT %(AdditionalOptions)</AdditionalOptions>
@@ -129,13 +129,13 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0501;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WIN32_WINNT=0x0501;WIN32_LEAN_AND_MEAN;NOMINMAX;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>D:\lib-c++\sqlite-amalgamation-3210000;D:\lib-c++\curl-7.84.0\deps\include;D:\lib-c++\curl-7.84.0\builds\x86_$(Configuration)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
