@@ -168,6 +168,7 @@
     <ClCompile Include="getSystemUUID.cpp" />
     <ClCompile Include="ini.c" />
     <ClCompile Include="INIReader.cpp" />
+    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="path.cpp" />
     <ClCompile Include="primex-monitor-cpp.cpp" />
     <ClCompile Include="sendData.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="ini.h" />
     <ClInclude Include="INIReader.h" />
     <ClInclude Include="json.hpp" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="path.h" />
     <ClInclude Include="sendData.h" />
     <ClInclude Include="sqlite-db.h" />

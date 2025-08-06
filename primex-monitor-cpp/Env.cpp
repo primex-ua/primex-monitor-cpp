@@ -1,7 +1,8 @@
 #include "Env.h"
-#include <iostream>
 #include "INIReader.h"
 #include "path.h"
+#include "Logger.h"
+#include <iostream>
 #include <memory>
 
 std::string exeDir = getExecutableDir();
@@ -11,28 +12,32 @@ Env* Env::instance = nullptr;
 
 Env::Env() : reader(configPath) {
 	if (reader.ParseError() < 0) {
-		std::cout << "Can't load " << configPath << std::endl;
+		Logger::log("Can't load config file: " + configPath);
 		throw std::runtime_error("Failed to load config file.");
 	}
 
 	if (!reader.HasValue("database", "path")) {
+		Logger::log("Missing value: [database] path in " + configPath);
 		throw std::runtime_error("Database path not specified in primex-monitor-config.ini");
 	}
 
 	if (!reader.HasValue("api", "url")) {
+		Logger::log("Missing value: [api] url in " + configPath);
 		throw std::runtime_error("API URL not specified in primex-monitor-config.ini");
 	}
-	
+
 	if (!reader.HasValue("api", "key")) {
+		Logger::log("Missing value: [api] key in " + configPath);
 		throw std::runtime_error("API key not specified in primex-monitor-config.ini");
 	}
 
-	std::cout << "Config loaded from 'primex-monitor-config.ini'" << std::endl;
-	std::cout << "dbPath = " << reader.Get("database", "path", "UNDEFINED") << std::endl;
-	std::cout << "apiUrl = " << reader.Get("api", "url", "UNDEFINED") << std::endl;
-	std::cout << "apiKey = " << reader.Get("api", "key", "UNDEFINED") << std::endl;
-	std::cout << "syncPeriodDays = " << reader.Get("settings", "sync_period_days", "UNDEFINED") << std::endl;
-	std::cout << std::endl;
+	// Log loaded config values
+	Logger::log("Config loaded from 'primex-monitor-config.ini'");
+	Logger::log("dbPath = " + reader.Get("database", "path", "UNDEFINED"));
+	Logger::log("apiUrl = " + reader.Get("api", "url", "UNDEFINED"));
+	Logger::log("apiKey = " + reader.Get("api", "key", "UNDEFINED"));
+	Logger::log("syncPeriodDays = " + reader.Get("settings", "sync_period_days", "UNDEFINED"));
+	Logger::log("");
 }
 
 Env& Env::getEnv() {

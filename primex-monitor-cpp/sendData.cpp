@@ -1,5 +1,5 @@
 #include "sendData.h"
-#include <iostream>
+#include "Logger.h"
 #include <curl/curl.h>
 
 static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* userp) {
@@ -12,7 +12,7 @@ static size_t WriteCallback(void* contents, size_t size, size_t nmemb, void* use
 bool sendData(const std::string& url, const std::string& apiKey, const std::string& systemUUID, const std::string& jsonString) {
 	CURL* curl = curl_easy_init();
 	if (!curl) {
-		std::cerr << "Failed to initialize cURL" << std::endl;
+		Logger::log("Failed to initialize cURL");
 		return false;
 	}
 
@@ -22,6 +22,7 @@ bool sendData(const std::string& url, const std::string& apiKey, const std::stri
 
 	struct curl_slist* headers = nullptr;
 	headers = curl_slist_append(headers, "Content-Type: application/json");
+
 	std::string cookieHeader = "X-API-KEY=" + apiKey + "; X-SYSTEM-UUID=" + systemUUID;
 
 	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0L);
@@ -36,10 +37,11 @@ bool sendData(const std::string& url, const std::string& apiKey, const std::stri
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseBody);
 	curl_easy_setopt(curl, CURLOPT_TIMEOUT, 10L);  // Avoid blocking forever
 
+	Logger::log("Sending data to: " + url);
 	res = curl_easy_perform(curl);
 
 	if (res != CURLE_OK) {
-		std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
+		Logger::log("cURL perform failed: " + std::string(curl_easy_strerror(res)));
 		curl_easy_cleanup(curl);
 		curl_slist_free_all(headers);
 		return false;
@@ -47,17 +49,17 @@ bool sendData(const std::string& url, const std::string& apiKey, const std::stri
 
 	curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &httpResponseCode);
 
-	std::cout << "HTTP Status: " << httpResponseCode << std::endl;
-	std::cout << "Server Response:\n" << responseBody << std::endl;
+	Logger::log("HTTP Status: " + std::to_string(httpResponseCode));
+	Logger::log("Server Response: " + responseBody);
 
 	curl_easy_cleanup(curl);
 	curl_slist_free_all(headers);
 
 	if (httpResponseCode != 201) {
-		std::cerr << "Server responded with error code: " << httpResponseCode << std::endl;
+		Logger::log("Server responded with error code: " + std::to_string(httpResponseCode));
 		return false;
 	}
 
-	std::cout << "Data sent successfully" << std::endl;
+	Logger::log("Data sent successfully");
 	return true;
 }

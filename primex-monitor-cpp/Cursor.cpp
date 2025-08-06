@@ -4,6 +4,7 @@
 #include <cstdio>
 #include "Cursor.h"
 #include "json.hpp"
+#include "Logger.h"
 
 using namespace std;
 using json = nlohmann::json;
@@ -11,7 +12,7 @@ using json = nlohmann::json;
 int Cursor::setCursor(json cursor) {
 	ofstream tmp("primex-monitor-cursor.json.tmp");
 	if (!tmp) {
-		cerr << "Error creating file: primex-monitor-cursor.json.tmp" << endl;
+		Logger::log("Error creating file: primex-monitor-cursor.json.tmp");
 		return 1;
 	}
 
@@ -22,11 +23,12 @@ int Cursor::setCursor(json cursor) {
 	std::remove("primex-monitor-cursor.json");
 
 	if (std::rename("primex-monitor-cursor.json.tmp", "primex-monitor-cursor.json") != 0) {
-		std::cerr << "Error renaming temp file to cursor file" << std::endl;
+		Logger::log("Error renaming temp file to cursor file");
 		return 2;
 	}
 
-	cout << "Successfully updated cursor: new cursor is " << cursor << endl;
+	Logger::log("Successfully updated cursor: new cursor is " + cursor.dump());
+
 	return 0;
 }
 
@@ -34,12 +36,12 @@ json Cursor::getCursor() {
 	json cursor;
 	ifstream file("primex-monitor-cursor.json");
 	if (!file) {
-		cout << "Error opening file: primex-monitor-cursor.json" << endl;
+		Logger::log("Error opening file: primex-monitor-cursor.json");
 		return { {"hasCursor", false} };
 	}
 
 	if (file.peek() == std::ifstream::traits_type::eof()) {
-		std::cerr << "Cursor file is empty." << std::endl;
+		Logger::log("Cursor file is empty.");
 		return { {"hasCursor", false} };
 	}
 
@@ -47,17 +49,17 @@ json Cursor::getCursor() {
 		cursor = json::parse(file);
 	}
 	catch (const json::parse_error& e) {
-		std::cerr << "JSON parse error: " << e.what() << std::endl;
+		Logger::log("JSON parse error: " + std::string(e.what()));
 		return { {"hasCursor", false} };
 	}
 
 
 	if (!cursor.contains("timestamp")) {
-		cout << "Error: cursor doesn't have timestamp" << endl;
+		Logger::log("Error: cursor doesn't have timestamp");
 		return { {"hasCursor", false} };
 	}
 
-	cout << "Cursor read from primex-monitor-cursor.json: " << cursor << endl;
+	Logger::log("Cursor read from primex-monitor-cursor.json: " + cursor.dump());
 
 	cursor["hasCursor"] = true;
 
