@@ -22,7 +22,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	try {
 		curl_global_init(CURL_GLOBAL_DEFAULT);
 
-		Logger::init("primex-monitor.log");
+		Logger::init();
 
 		Logger::log("App started with following parameters:");
 
