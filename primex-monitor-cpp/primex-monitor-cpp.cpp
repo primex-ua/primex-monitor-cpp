@@ -12,6 +12,7 @@
 #include "SQLQueries.h"
 #include <curl/curl.h>
 #include "Logger.h"
+#include "Hasher.h"
 
 using namespace std;
 using json = nlohmann::json;
@@ -20,6 +21,21 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	SetConsoleOutputCP(CP_UTF8);
 
 	try {
+		std::string exeDir = getExecutableDir();
+		std::string mutexName = Hasher::simpleHash(exeDir);
+
+		HANDLE hMutex = CreateMutexA(NULL, FALSE, mutexName.c_str());
+		if (!hMutex) {
+			std::cerr << "CreateMutex failed with error " << GetLastError() << std::endl;
+			return 1;
+		}
+
+		if (GetLastError() == ERROR_ALREADY_EXISTS) {
+			std::cout << "Another instance is running in this directory." << std::endl;
+			CloseHandle(hMutex);
+			return 1;
+		}
+
 		curl_global_init(CURL_GLOBAL_DEFAULT);
 
 		Logger::init();
@@ -166,6 +182,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 		Logger::log("App finished");
 		Logger::close();
+
+		CloseHandle(hMutex);
 
 		return 0;
 	}

@@ -166,6 +166,7 @@
     <ClCompile Include="Cursor.cpp" />
     <ClCompile Include="Env.cpp" />
     <ClCompile Include="getSystemUUID.cpp" />
+    <ClCompile Include="Hasher.cpp" />
     <ClCompile Include="ini.c" />
     <ClCompile Include="INIReader.cpp" />
     <ClCompile Include="Logger.cpp" />
@@ -178,6 +179,7 @@
     <ClInclude Include="Cursor.h" />
     <ClInclude Include="Env.h" />
     <ClInclude Include="getSystemUUID.h" />
+    <ClInclude Include="Hasher.h" />
     <ClInclude Include="ini.h" />
     <ClInclude Include="INIReader.h" />
     <ClInclude Include="json.hpp" />
