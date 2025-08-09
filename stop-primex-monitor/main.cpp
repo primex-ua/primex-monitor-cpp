@@ -47,5 +47,9 @@ int main() {
 	}
 
 	CloseHandle(hEvent);
+
+	std::cout << "Press Enter to exit...";
+	std::cin.get();
+
 	return 0;
 }

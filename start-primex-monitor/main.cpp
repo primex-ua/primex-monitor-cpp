@@ -40,5 +40,9 @@ int main() {
 	std::cout << "App started successfully." << std::endl;
 	CloseHandle(pi.hProcess);
 	CloseHandle(pi.hThread);
+
+	std::cout << "Press Enter to exit...";
+	std::cin.get();
+
 	return 0;
 }
