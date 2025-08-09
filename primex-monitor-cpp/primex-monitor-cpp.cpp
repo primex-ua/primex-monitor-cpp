@@ -20,11 +20,15 @@ using json = nlohmann::json;
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow) {
 	SetConsoleOutputCP(CP_UTF8);
 
+	HANDLE hMutex = NULL;
+	HANDLE hShutdownEvent = NULL;
+
 	try {
 		std::string exeDir = getExecutableDir();
 		std::string mutexName = Hasher::simpleHash(exeDir);
+		std::string shutdownEventName = mutexName + "_shutdown";
 
-		HANDLE hMutex = CreateMutexA(NULL, FALSE, mutexName.c_str());
+		hMutex = CreateMutexA(NULL, FALSE, mutexName.c_str());
 		if (!hMutex) {
 			std::cerr << "CreateMutex failed with error " << GetLastError() << std::endl;
 			return 1;
@@ -35,12 +39,24 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			CloseHandle(hMutex);
 			return 1;
 		}
-
-		curl_global_init(CURL_GLOBAL_DEFAULT);
-
+		
+		if (curl_global_init(CURL_GLOBAL_DEFAULT) != 0) {
+			std::cerr << "curl_global_init failed." << std::endl;
+			CloseHandle(hMutex);
+			return 1;
+		}
+		
 		Logger::init();
-
 		Logger::log("App started with following parameters:");
+
+		hShutdownEvent = CreateEventA(NULL, TRUE, FALSE, shutdownEventName.c_str());
+		if (!hShutdownEvent) {
+			Logger::log("Failed to create shutdown event. Error: " + std::to_string(GetLastError()));
+			Logger::close();
+			curl_global_cleanup();
+			CloseHandle(hMutex);
+			return 1;
+		}
 
 		Env& env = Env::getEnv();
 		SQLiteDB db(env.getDbPath());
@@ -54,6 +70,11 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		sqlite3_stmt* stmtQueryTransactions = db.prepareStmt(SQL_SELECT_TRANSACTIONS.c_str());
 
 		while (true) {
+			if (WaitForSingleObject(hShutdownEvent, 0) == WAIT_OBJECT_0) {
+				Logger::log("Shutdown signal received. Exiting main loop.");
+				break;
+			}
+
 			Logger::log("");
 			Logger::log("Start reading from the database");
 
@@ -184,6 +205,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		Logger::close();
 
 		CloseHandle(hMutex);
+		CloseHandle(hShutdownEvent);
 
 		return 0;
 	}
@@ -191,12 +213,18 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		std::cerr << "Unhandled exception: " << ex.what() << std::endl;
 		Logger::log(std::string("Unhandled exception: ") + ex.what());
 		Logger::close();
+		if (hShutdownEvent) CloseHandle(hShutdownEvent);
+		if (hMutex) CloseHandle(hMutex);
+		curl_global_cleanup();
 		return 1;
 	}
 	catch (...) {
 		std::cerr << "Unhandled unknown exception" << std::endl;
 		Logger::log("Unhandled unknown exception");
 		Logger::close();
+		if (hShutdownEvent) CloseHandle(hShutdownEvent);
+		if (hMutex) CloseHandle(hMutex);
+		curl_global_cleanup();
 		return 2;
 	}
 }

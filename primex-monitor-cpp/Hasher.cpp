@@ -8,6 +8,6 @@ std::string Hasher::simpleHash(std::string input) {
 	}
 
 	char buffer[32];
-	sprintf_s(buffer, "PrimexMonitorMutex_%08X", hash);
+	sprintf_s(buffer, "primex-monitor_%08X", hash);
 	return std::string(buffer);
 }
