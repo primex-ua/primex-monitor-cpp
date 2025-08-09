@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{9B5ED651-A19B-4C55-891B-DB9D4194FADE}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>primexmonitorcpp</RootNamespace>
+    <RootNamespace>primexmonitor</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -171,7 +171,7 @@
     <ClCompile Include="INIReader.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="path.cpp" />
-    <ClCompile Include="primex-monitor-cpp.cpp" />
+    <ClCompile Include="primex-monitor.cpp" />
     <ClCompile Include="sendData.cpp" />
     <ClCompile Include="sqlite-db.cpp" />
   </ItemGroup>

@@ -160,17 +160,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\primex-monitor-cpp\ini.c" />
-    <ClCompile Include="..\primex-monitor-cpp\INIReader.cpp" />
-    <ClCompile Include="..\primex-monitor-cpp\path.cpp" />
+    <ClCompile Include="..\primex-monitor\ini.c" />
+    <ClCompile Include="..\primex-monitor\INIReader.cpp" />
+    <ClCompile Include="..\primex-monitor\path.cpp" />
     <ClCompile Include="addComponents.cpp" />
     <ClCompile Include="seed-component.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\primex-monitor-cpp\ini.h" />
-    <ClInclude Include="..\primex-monitor-cpp\INIReader.h" />
-    <ClInclude Include="..\primex-monitor-cpp\json.hpp" />
-    <ClInclude Include="..\primex-monitor-cpp\path.h" />
+    <ClInclude Include="..\primex-monitor\ini.h" />
+    <ClInclude Include="..\primex-monitor\INIReader.h" />
+    <ClInclude Include="..\primex-monitor\json.hpp" />
+    <ClInclude Include="..\primex-monitor\path.h" />
     <ClInclude Include="addComponents.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
