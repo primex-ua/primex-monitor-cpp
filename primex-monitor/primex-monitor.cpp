@@ -47,6 +47,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		}
 		
 		Logger::init();
+		Logger::log("");
+		Logger::log("");
 		Logger::log("App started with following parameters:");
 
 		hShutdownEvent = CreateEventA(NULL, TRUE, FALSE, shutdownEventName.c_str());
@@ -70,8 +72,16 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		sqlite3_stmt* stmtQueryTransactions = db.prepareStmt(SQL_SELECT_TRANSACTIONS.c_str());
 
 		while (true) {
-			if (WaitForSingleObject(hShutdownEvent, 0) == WAIT_OBJECT_0) {
+			DWORD waitResult = WaitForSingleObject(hShutdownEvent, 10000);
+			if (waitResult == WAIT_OBJECT_0) {
 				Logger::log("Shutdown signal received. Exiting main loop.");
+				break;
+			}
+			else if (waitResult == WAIT_TIMEOUT) {
+			}
+			else {
+				DWORD err = GetLastError();
+				Logger::log(std::string("WaitForSingleObject failed. Error: ") + std::to_string(err));
 				break;
 			}
 
@@ -191,8 +201,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			components.clear();
 			products.clear();
 			transactions.clear();
-
-			Sleep(10000);
 		}
 
 		sqlite3_finalize(stmtComponents);
@@ -201,6 +209,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 		curl_global_cleanup();
 
+		Logger::log("");
 		Logger::log("App finished");
 		Logger::close();
 
