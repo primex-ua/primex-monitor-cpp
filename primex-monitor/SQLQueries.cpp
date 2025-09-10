@@ -16,7 +16,7 @@ const string SQL_CREATE_TABLES = R"(
 		"temperature"					REAL,
 		"output"						REAL,
 		"water_correction_factor"		REAL,
-		"components"					TEXT CHECK (json_valid(components)), 
+		"components"					TEXT DEFAULT '[]' CHECK (json_valid(components)), 
 		PRIMARY KEY("id" AUTOINCREMENT)
 	);
 
