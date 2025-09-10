@@ -77,44 +77,24 @@ int insertProduct(sqlite3 *db, json product)
 			line_name,
 			press,
 			total_weight,
-			moisture_content,
+			moisture_content_target,
+			moisture_content_measured,
 			temperature,
 			output,
-			water_weight,
-			component_1_weight,
-			component_1_name,
-			component_2_weight,
-			component_2_name,
-			component_3_weight,
-			component_3_name,
-			component_4_weight,
-			component_4_name,
-			component_5_weight,
-			component_5_name,
-			component_6_weight,
-			component_6_name
+			water_correction_factor,
+			components
 		)
 		VALUES (
 			?,	-- name
 			?,	-- line_name
 			?,	-- press
 			?,	-- total_weight
-			?,	-- moisture_content
+			?,	-- moisture_content_target
+			?,	-- moisture_content_measured
 			?,	-- temperature
 			?,	-- output
-			?,	-- water_weight
-			?,	-- component_1_weight
-			?,	-- component_1_name
-			?,	-- component_2_weight
-			?,	-- component_2_name
-			?,	-- component_3_weight
-			?,	-- component_3_name
-			?,	-- component_4_weight
-			?,	-- component_4_name
-			?,	-- component_5_weight
-			?,	-- component_5_name
-			?,	-- component_6_weight
-			?	-- component_6_name
+			?,  -- water_correction_factor
+			?   -- components
 		);
 	)";
 
@@ -139,81 +119,46 @@ int insertProduct(sqlite3 *db, json product)
 
 	sqlite3_bind_double(stmt, 4, product["total_weight"]);
 
-	if (product.contains("moisture_content")) {
-		sqlite3_bind_double(stmt, 5, product["moisture_content"]);
+	if (product.contains("moisture_content_target")) {
+		sqlite3_bind_double(stmt, 5, product["moisture_content_target"]);
 	}
 	else {
 		sqlite3_bind_null(stmt, 5);
 	}
 
-	if (product.contains("temperature")) {
-		sqlite3_bind_double(stmt, 6, product["temperature"]);
+	if (product.contains("moisture_content_measured")) {
+		sqlite3_bind_double(stmt, 6, product["moisture_content_measured"]);
 	}
 	else {
 		sqlite3_bind_null(stmt, 6);
 	}
 
-	if (product.contains("output")) {
-		sqlite3_bind_double(stmt, 7, product["output"]);
+	if (product.contains("temperature")) {
+		sqlite3_bind_double(stmt, 7, product["temperature"]);
 	}
 	else {
 		sqlite3_bind_null(stmt, 7);
 	}
 
-	sqlite3_bind_double(stmt, 8, product["water_weight"]);
+	if (product.contains("output")) {
+		sqlite3_bind_double(stmt, 8, product["output"]);
+	}
+	else {
+		sqlite3_bind_null(stmt, 8);
+	}
 
-	if (product.contains("component_1_weight") && product.contains("component_1_name")) {
-		sqlite3_bind_double(stmt, 9, product["component_1_weight"]);
-		sqlite3_bind_text(stmt, 10, product["component_1_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
+	if (product.contains("water_correction_factor")) {
+		sqlite3_bind_double(stmt, 9, product["water_correction_factor"]);
 	}
 	else {
 		sqlite3_bind_null(stmt, 9);
+	}
+
+	if (product.contains("components")) {
+		sqlite3_bind_text(stmt, 10, product["components"].dump().c_str(), -1, SQLITE_TRANSIENT);
+	}
+	else {
 		sqlite3_bind_null(stmt, 10);
-	}
-
-	if (product.contains("component_2_weight") && product.contains("component_2_name")) {
-		sqlite3_bind_double(stmt, 11, product["component_2_weight"]);
-		sqlite3_bind_text(stmt, 12, product["component_2_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
-	}
-	else {
-		sqlite3_bind_null(stmt, 11);
-		sqlite3_bind_null(stmt, 12);
-	}
-
-	if (product.contains("component_3_weight") && product.contains("component_3_name")) {
-		sqlite3_bind_double(stmt, 13, product["component_3_weight"]);
-		sqlite3_bind_text(stmt, 14, product["component_3_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
-	}
-	else {
-		sqlite3_bind_null(stmt, 13);
-		sqlite3_bind_null(stmt, 14);
-	}
-
-	if (product.contains("component_4_weight") && product.contains("component_4_name")) {
-		sqlite3_bind_double(stmt, 15, product["component_4_weight"]);
-		sqlite3_bind_text(stmt, 16, product["component_4_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
-	}
-	else {
-		sqlite3_bind_null(stmt, 15);
-		sqlite3_bind_null(stmt, 16);
-	}
-
-	if (product.contains("component_5_weight") && product.contains("component_5_name")) {
-		sqlite3_bind_double(stmt, 17, product["component_5_weight"]);
-		sqlite3_bind_text(stmt, 18, product["component_5_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
-	}
-	else {
-		sqlite3_bind_null(stmt, 17);
-		sqlite3_bind_null(stmt, 18);
-	}
-
-	if (product.contains("component_6_weight") && product.contains("component_6_name")) {
-		sqlite3_bind_double(stmt, 19, product["component_6_weight"]);
-		sqlite3_bind_text(stmt, 20, product["component_6_name"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
-	}
-	else {
-		sqlite3_bind_null(stmt, 19);
-		sqlite3_bind_null(stmt, 20);
 	}
 
 	rc = sqlite3_step(stmt);
@@ -251,6 +196,7 @@ json generateProduct()
 {
 	vector<string> names = { "Облік не проводився", "Рецепт 1", "Рецепт 2", "Рецепт 3", "Рецепт 4", "Рецепт 5" };
 	vector<string> lineNames = { "О", "Ф", "О1", "О2", "Ф1", "Ф2" };
+	vector<string> componentNames = { "Відсів", "Пісок", "Щебінь", "Щебінь 2", "Цемент", "Хім. добавки", "Вода" };
 	json product;
 
 	int index = static_cast<int>(getRandomNumber(0, names.size() - 1, 0));
@@ -259,44 +205,57 @@ json generateProduct()
 	double mixerVolume = 5.0;
 	double specificWeight = 2500; // kg/m^3
 
-	double components[7];
-	components[0] = mixerVolume * getRandomNumber(60.0, 100.0, 1);  // вода
-	components[1] = mixerVolume * getRandomNumber(150.0, 200.0, 1); // відсів
-	components[2] = mixerVolume * getRandomNumber(350.0, 450.0, 1); // пісок
-	components[3] = mixerVolume * getRandomNumber(150.0, 200.0, 1); // щебінь
-	components[4] = mixerVolume * getRandomNumber(150.0, 200.0, 1); // щебінь 2
-	components[5] = mixerVolume * getRandomNumber(150.0, 200.0, 1); // цемент
-	components[6] = mixerVolume * getRandomNumber(2.0, 15.0, 2);    // хім. добавки
+	double componentsWeights[7];
+	componentsWeights[0] = mixerVolume * getRandomNumber(150.0, 200.0, 1); // відсів
+	componentsWeights[1] = mixerVolume * getRandomNumber(350.0, 450.0, 1); // пісок
+	componentsWeights[2] = mixerVolume * getRandomNumber(150.0, 200.0, 1); // щебінь
+	componentsWeights[3] = mixerVolume * getRandomNumber(150.0, 200.0, 1); // щебінь 2
+	componentsWeights[4] = mixerVolume * getRandomNumber(150.0, 200.0, 1); // цемент
+	componentsWeights[5] = mixerVolume * getRandomNumber(2.0, 15.0, 2);    // хім. добавки
+	componentsWeights[6] = mixerVolume * getRandomNumber(60.0, 100.0, 1);  // вода
 
 	double totalWeight = 0;
 	for (int i = 0; i < 7; i++)
 	{
-		totalWeight += components[i];
+		totalWeight += componentsWeights[i];
 	}
 	totalWeight = round(totalWeight * 10.0) / 10.0;
 
 	product["name"] = names[index];
 	product["line_name"] = lineNames[(int)getRandomNumber(0, lineNames.size() - 1, 0)];
 	product["total_weight"] = totalWeight;
-	product["water_weight"] = components[0];
-	product["component_1_weight"] = components[1];
-	product["component_1_name"] = "Відсів";
-	product["component_2_weight"] = components[2];
-	product["component_2_name"] = "Пісок";
-	product["component_3_weight"] = components[3];
-	product["component_3_name"] = "Щебінь";
-	product["component_4_weight"] = components[4];
-	product["component_4_name"] = "Щебінь 2";
-	product["component_5_weight"] = components[5];
-	product["component_5_name"] = "Цемент";
-	product["component_6_weight"] = components[6];
-	product["component_6_name"] = "Хім. добавки";
+
+	json components = json::array();
+
+	int count = 0;
+
+	for (const std::string& componentName : componentNames) {
+		if (count < 4) {
+			components.push_back({
+				{"name", componentName},
+				{"weight", componentsWeights[count]},
+				{"moistureContent", getRandomNumber(1, 25, 1)}
+			});
+		}
+		else {
+			components.push_back({
+				{"name", componentName},
+				{"weight", componentsWeights[count]},
+			});
+		}
+
+		count++;
+	}
+
+	product["components"] = components;
 
 	if (!isBackupRecord) {
 		product["press"] = (int)getRandomNumber(1, 5, 0);
-		product["moisture_content"] = getRandomNumber(1, 20, 2);
+		product["moisture_content_target"] = getRandomNumber(1, 20, 2);
+		product["moisture_content_measured"] = getRandomNumber(1, 20, 2);
 		product["temperature"] = getRandomNumber(0, 40, 1);
 		product["output"] = round((totalWeight / specificWeight) * 100.0) / 100.0;
+		product["water_correction_factor"] = getRandomNumber(0, 1, 3);
 	}
 
 	return product;

@@ -174,6 +174,7 @@
     <ClCompile Include="primex-monitor.cpp" />
     <ClCompile Include="sendData.cpp" />
     <ClCompile Include="sqlite-db.cpp" />
+    <ClCompile Include="SQLQueries.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cursor.h" />

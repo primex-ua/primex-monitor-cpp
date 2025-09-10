@@ -48,6 +48,9 @@
     <ClCompile Include="ini.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SQLQueries.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sqlite-db.h">
