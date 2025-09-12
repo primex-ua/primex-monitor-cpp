@@ -16,7 +16,8 @@ const string SQL_CREATE_TABLES = R"(
 		"temperature"					REAL,
 		"output"						REAL,
 		"water_correction_factor"		REAL,
-		"components"					TEXT DEFAULT '[]' CHECK (json_valid(components)), 
+		"components"					TEXT DEFAULT '[]' CHECK (json_valid(components)),
+		"additional_params"				TEXT CHECK ("additional_params" IS NULL OR json_valid("additional_params")),
 		PRIMARY KEY("id" AUTOINCREMENT)
 	);
 
@@ -65,7 +66,8 @@ const string SQL_SELECT_PRODUCTS = R"(
 		'temperature', products.temperature,
 		'output', products.output,
 		'waterCorrectionFactor', products.water_correction_factor,
-		'components', products.components
+		'components', products.components,
+		'metadata', products.additional_params
 	) AS product
 	FROM products
 	WHERE products.mixed_at > COALESCE(?, DATETIME('now', ?))

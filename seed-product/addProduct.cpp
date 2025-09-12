@@ -82,7 +82,8 @@ int insertProduct(sqlite3 *db, json product)
 			temperature,
 			output,
 			water_correction_factor,
-			components
+			components,
+			additional_params
 		)
 		VALUES (
 			?,	-- name
@@ -94,7 +95,8 @@ int insertProduct(sqlite3 *db, json product)
 			?,	-- temperature
 			?,	-- output
 			?,  -- water_correction_factor
-			?   -- components
+			?,  -- components
+			?	-- additional_params
 		);
 	)";
 
@@ -159,6 +161,13 @@ int insertProduct(sqlite3 *db, json product)
 	}
 	else {
 		sqlite3_bind_null(stmt, 10);
+	}
+
+	if (product.contains("additional_params")) {
+		sqlite3_bind_text(stmt, 11, product["additional_params"].dump().c_str(), -1, SQLITE_TRANSIENT);
+	}
+	else {
+		sqlite3_bind_null(stmt, 11);
 	}
 
 	rc = sqlite3_step(stmt);
@@ -256,6 +265,10 @@ json generateProduct()
 		product["temperature"] = getRandomNumber(0, 40, 1);
 		product["output"] = round((totalWeight / specificWeight) * 100.0) / 100.0;
 		product["water_correction_factor"] = getRandomNumber(0, 1, 3);
+		
+		json params;
+		params["mode"] = (int)getRandomNumber(1, 7, 0);
+		product["additional_params"] = params;
 	}
 
 	return product;
