@@ -172,7 +172,7 @@
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="path.cpp" />
     <ClCompile Include="primex-monitor.cpp" />
-    <ClCompile Include="sendData.cpp" />
+    <ClCompile Include="api.cpp" />
     <ClCompile Include="sqlite-db.cpp" />
     <ClCompile Include="SQLQueries.cpp" />
   </ItemGroup>
@@ -186,7 +186,7 @@
     <ClInclude Include="json.hpp" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="path.h" />
-    <ClInclude Include="sendData.h" />
+    <ClInclude Include="api.h" />
     <ClInclude Include="sqlite-db.h" />
     <ClInclude Include="SQLQueries.h" />
   </ItemGroup>

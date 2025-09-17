@@ -1,5 +1,5 @@
-#ifndef SEND_DATA_H
-#define SEND_DATA_H
+#ifndef API_H
+#define API_H
 
 #define CURL_STATICLIB
 
@@ -7,4 +7,6 @@
 
 bool sendData(const std::string& url, const std::string& apiKey, const std::string& systemUUID, const std::string& jsonString);
 
-#endif // !SEND_DATA_H
+bool sendHeartbeat(const std::string& url, const std::string& apiKey, const std::string& systemUUID);
+
+#endif // !API_H

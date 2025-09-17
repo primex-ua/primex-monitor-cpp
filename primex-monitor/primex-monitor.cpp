@@ -6,7 +6,7 @@
 #include "sqlite3.h"
 #include "Cursor.h"
 #include "Env.h"
-#include "sendData.h"
+#include "api.h"
 #include "json.hpp"
 #include "getSystemUUID.h"
 #include "SQLQueries.h"
@@ -70,6 +70,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		sqlite3_stmt* stmtQueryProducts = db.prepareStmt(SQL_SELECT_PRODUCTS.c_str());
 
 		sqlite3_stmt* stmtQueryTransactions = db.prepareStmt(SQL_SELECT_TRANSACTIONS.c_str());
+
+		bool isAppStart = true;
+		int count = 0;
 
 		while (true) {
 			DWORD waitResult = WaitForSingleObject(hShutdownEvent, 10000);
@@ -159,7 +162,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 				string systemUUID = GetSystemUUID();
 
-				bool isRequestSuccess = sendData(env.getApiUrl(), env.getApiKey(), systemUUID, postRequestData.dump());
+				bool isRequestSuccess = sendData(env.getApiUrl() + "/sync", env.getApiKey(), systemUUID, postRequestData.dump());
 
 				if (isRequestSuccess) {
 					cout << endl;
@@ -195,12 +198,29 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 						Cursor::setCursor(newCursor);
 					}
 
+					isAppStart = false;
+					count = 0;
 				}
+
+			}
+			else if (isAppStart || count >= 5) {
+				string systemUUID = GetSystemUUID();
+
+				bool isRequestSuccess = sendHeartbeat(env.getApiUrl() + "/heartbeat", env.getApiKey(), systemUUID);
+
+				if (isRequestSuccess) {
+					isAppStart = false;
+					count = 0;
+				}
+			}
+			else {
+				count++;
 			}
 
 			components.clear();
 			products.clear();
 			transactions.clear();
+
 		}
 
 		sqlite3_finalize(stmtComponents);
