@@ -9,6 +9,8 @@ using json = nlohmann::json;
 
 class Cursor {
 public:
+	static const json DEFAULT_CURSOR;
+
 	static int setCursor(json cursor);
 	static json getCursor();
 };

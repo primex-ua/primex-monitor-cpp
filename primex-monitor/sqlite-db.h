@@ -20,6 +20,7 @@ public:
 	void createTableIfNotExists();
 	sqlite3_stmt* prepareStmt(const char* sql);
 	Table queryDatabase(sqlite3_stmt* stmt);
+	void checkpoint(bool truncate = false);
 
 private:
 	sqlite3 *db_;

@@ -39,13 +39,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			CloseHandle(hMutex);
 			return 1;
 		}
-		
+
 		if (curl_global_init(CURL_GLOBAL_DEFAULT) != 0) {
 			std::cerr << "curl_global_init failed." << std::endl;
 			CloseHandle(hMutex);
 			return 1;
 		}
-		
+
 		Logger::init();
 		Logger::log("");
 		Logger::log("");
@@ -65,14 +65,34 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 		db.createTableIfNotExists();
 
+		sqlite3_stmt* stmtInitInstanceId = db.prepareStmt(SQL_INIT_DB_INSTANCE_ID.c_str());
+		db.queryDatabase(stmtInitInstanceId);
+		sqlite3_finalize(stmtInitInstanceId);
+
+		sqlite3_stmt* stmtGetInstanceId = db.prepareStmt(SQL_SELECT_DB_INSTANCE_ID.c_str());
+		Table instanceIdResult = db.queryDatabase(stmtGetInstanceId);
+		sqlite3_finalize(stmtGetInstanceId);
+
+		std::string dbInstanceId;
+		if (instanceIdResult.empty() || instanceIdResult[0].find("value") == instanceIdResult[0].end()) {
+			Logger::log("ERROR: Failed to get database instance ID");
+			Logger::close();
+			curl_global_cleanup();
+			CloseHandle(hMutex);
+			CloseHandle(hShutdownEvent);
+			return 1;
+		}
+
+		dbInstanceId = instanceIdResult[0].at("value");
+		Logger::log("Database instance ID: " + dbInstanceId);
+
 		sqlite3_stmt* stmtComponents = db.prepareStmt(SQL_SELECT_COMPONENTS.c_str());
-
 		sqlite3_stmt* stmtQueryProducts = db.prepareStmt(SQL_SELECT_PRODUCTS.c_str());
-
 		sqlite3_stmt* stmtQueryTransactions = db.prepareStmt(SQL_SELECT_TRANSACTIONS.c_str());
 
 		bool isAppStart = true;
 		int count = 0;
+		int syncCount = 0;
 
 		while (true) {
 			DWORD waitResult = WaitForSingleObject(hShutdownEvent, 10000);
@@ -89,9 +109,29 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			}
 
 			Logger::log("");
-			Logger::log("Start reading from the database");
 
 			json cursor = Cursor::getCursor();
+			bool hasCursorChanged = false;
+
+			if (!cursor["hasCursor"].get<bool>()) {
+				cursor = Cursor::DEFAULT_CURSOR;
+				cursor["dbInstanceId"] = dbInstanceId;
+				hasCursorChanged = true;
+
+				Logger::log("");
+				Logger::log("Cursor is absent, using default cursor instead");
+			}
+			else if (cursor["dbInstanceId"].get<string>() != dbInstanceId) {
+				cursor = Cursor::DEFAULT_CURSOR;
+				cursor["dbInstanceId"] = dbInstanceId;
+				hasCursorChanged = true;
+
+				Logger::log("");
+				Logger::log("Database was recreated, resetting cursor");
+			}
+
+			Logger::log("Start reading from the database");
+
 			Table productsResult;
 			Table componentsResult;
 			Table transactionsResult;
@@ -99,36 +139,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			json components;
 			json transactions;
 
-			if (cursor["hasCursor"].get<bool>()) {
-				sqlite3_bind_text(stmtComponents, 1, cursor["timestamp"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
-				sqlite3_bind_text(stmtComponents, 2, cursor["timestamp"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
+			sqlite3_bind_int(stmtComponents, 1, cursor["componentId"].get<int>());
+			sqlite3_bind_int(stmtQueryProducts, 1, cursor["productId"].get<int>());
+			sqlite3_bind_int(stmtQueryTransactions, 1, cursor["transactionId"].get<int>());
 
-				sqlite3_bind_text(stmtQueryProducts, 1, cursor["timestamp"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
-				sqlite3_bind_null(stmtQueryProducts, 2);
-
-				sqlite3_bind_text(stmtQueryTransactions, 1, cursor["timestamp"].get<string>().c_str(), -1, SQLITE_TRANSIENT);
-				sqlite3_bind_null(stmtQueryTransactions, 2);
-
-				componentsResult = db.queryDatabase(stmtComponents);
-				productsResult = db.queryDatabase(stmtQueryProducts);
-				transactionsResult = db.queryDatabase(stmtQueryTransactions);
-			}
-			else {
-				string period = "-" + to_string(env.getSyncPeriodDays()) + " days";
-
-				sqlite3_bind_null(stmtComponents, 1);
-				sqlite3_bind_null(stmtComponents, 2);
-
-				sqlite3_bind_null(stmtQueryProducts, 1);
-				sqlite3_bind_text(stmtQueryProducts, 2, period.c_str(), -1, SQLITE_TRANSIENT);
-
-				sqlite3_bind_null(stmtQueryTransactions, 1);
-				sqlite3_bind_text(stmtQueryTransactions, 2, period.c_str(), -1, SQLITE_TRANSIENT);
-
-				componentsResult = db.queryDatabase(stmtComponents);
-				productsResult = db.queryDatabase(stmtQueryProducts);
-				transactionsResult = db.queryDatabase(stmtQueryTransactions);
-			}
+			componentsResult = db.queryDatabase(stmtComponents);
+			productsResult = db.queryDatabase(stmtQueryProducts);
+			transactionsResult = db.queryDatabase(stmtQueryTransactions);
 
 			sqlite3_reset(stmtComponents);
 			sqlite3_reset(stmtQueryProducts);
@@ -165,43 +182,25 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 				bool isRequestSuccess = sendData(env.getApiUrl() + "/sync", env.getApiKey(), systemUUID, postRequestData.dump());
 
 				if (isRequestSuccess) {
-					cout << endl;
+					json newCursor;
 
-					string latestTimestamp = cursor["hasCursor"].get<bool>() ? cursor["timestamp"].get<string>() : "0000-00-00T00:00:00Z";
+					newCursor["dbInstanceId"] = cursor["dbInstanceId"];
+					newCursor["productId"] = products.empty() || products.back()["id"].is_null() ? cursor["productId"] : products.back()["id"];
+					newCursor["componentId"] = components.empty() || components.back()["id"].is_null() ? cursor["componentId"] : components.back()["id"];
+					newCursor["transactionId"] = transactions.empty() || transactions.back()["id"].is_null() ? cursor["transactionId"] : transactions.back()["id"];
 
-					if (!products.empty() && !products.back()["mixedAt"].is_null()) {
-						string productTimestamp = products.back()["mixedAt"].get<string>();
-						if (productTimestamp > latestTimestamp) {
-							latestTimestamp = productTimestamp;
-						}
-					}
-
-					if (!transactions.empty() && !transactions.back()["timestamp"].is_null()) {
-						string transactionTimestamp = transactions.back()["timestamp"].get<string>();
-						if (transactionTimestamp > latestTimestamp) {
-							latestTimestamp = transactionTimestamp;
-						}
-					}
-
-					for (const auto& comp : components) {
-						if (!comp["updated_at"].is_null()) {
-							string componentTimestamp = comp["updated_at"].get<string>();
-							if (componentTimestamp > latestTimestamp) {
-								latestTimestamp = componentTimestamp;
-							}
-						}
-					}
-
-					if (!latestTimestamp.empty()) {
-						json newCursor;
-						newCursor["timestamp"] = latestTimestamp;
-						Cursor::setCursor(newCursor);
-					}
+					Cursor::setCursor(newCursor);
 
 					isAppStart = false;
 					count = 0;
-				}
+					syncCount++;
 
+					if (syncCount >= 50) {
+						Logger::log("Performing periodic WAL checkpoint (after 50 syncs)...");
+						db.checkpoint();
+						syncCount = 0;
+					}
+				}
 			}
 			else if (isAppStart || count >= 5) {
 				string systemUUID = GetSystemUUID();
@@ -217,15 +216,21 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 				count++;
 			}
 
+			if (hasCursorChanged) {
+				cursor.erase("hasCursor");
+				Cursor::setCursor(cursor);
+			}
+
 			components.clear();
 			products.clear();
 			transactions.clear();
-
 		}
 
 		sqlite3_finalize(stmtComponents);
 		sqlite3_finalize(stmtQueryProducts);
 		sqlite3_finalize(stmtQueryTransactions);
+
+		db.checkpoint(true);
 
 		curl_global_cleanup();
 

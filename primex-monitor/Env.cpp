@@ -31,12 +31,10 @@ Env::Env() : reader(configPath) {
 		throw std::runtime_error("API key not specified in primex-monitor-config.ini");
 	}
 
-	// Log loaded config values
 	Logger::log("Config loaded from 'primex-monitor-config.ini'");
 	Logger::log("dbPath = " + reader.Get("database", "path", "UNDEFINED"));
 	Logger::log("apiUrl = " + reader.Get("api", "url", "UNDEFINED"));
 	Logger::log("apiKey = " + reader.Get("api", "key", "UNDEFINED"));
-	Logger::log("syncPeriodDays = " + reader.Get("settings", "sync_period_days", "UNDEFINED"));
 	Logger::log("");
 }
 
@@ -57,8 +55,4 @@ std::string Env::getApiUrl() {
 
 std::string Env::getApiKey() {
 	return reader.Get("api", "key", "UNDEFINED");
-}
-
-int Env::getSyncPeriodDays() {
-	return reader.GetInteger("settings", "sync_period_days", 0);
 }

@@ -22,7 +22,6 @@ public:
 	std::string getDbPath();
 	std::string getApiKey();
 	std::string getApiUrl();
-	int getSyncPeriodDays();
 };
 
 #endif // !ENV_H
