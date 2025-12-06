@@ -17,6 +17,54 @@
 using namespace std;
 using json = nlohmann::json;
 
+static const size_t MAX_PRODUCTS_PER_BATCH = 200;
+static const size_t MAX_TRANSACTIONS_PER_BATCH = 500;
+
+static bool sendSyncDataInBatches(Env& env,
+	const std::string& systemUUID,
+	const json& components,
+	const json& products,
+	const json& transactions) {
+
+	size_t productIndex = 0;
+	size_t transactionIndex = 0;
+	bool componentsSent = false;
+	bool anyRequestSent = false;
+
+	if (products.empty() && transactions.empty()) {
+		return true;
+	}
+
+	while (productIndex < products.size() || transactionIndex < transactions.size()) {
+		json productBatch = json::array();
+		json transactionBatch = json::array();
+
+		for (size_t i = 0; i < MAX_PRODUCTS_PER_BATCH && productIndex < products.size(); ++i, ++productIndex) {
+			productBatch.push_back(products[productIndex]);
+		}
+
+		for (size_t i = 0; i < MAX_TRANSACTIONS_PER_BATCH && transactionIndex < transactions.size(); ++i, ++transactionIndex) {
+			transactionBatch.push_back(transactions[transactionIndex]);
+		}
+
+		json postRequestData;
+		if (!componentsSent && !components.empty()) {
+			postRequestData["components"] = components;
+		}
+		postRequestData["products"] = productBatch;
+		postRequestData["componentTransactions"] = transactionBatch;
+
+		if (!sendData(env.getApiUrl() + "/sync", env.getApiKey(), systemUUID, postRequestData.dump())) {
+			return false;
+		}
+
+		componentsSent = true;
+		anyRequestSent = true;
+	}
+
+	return anyRequestSent;
+}
+
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nCmdShow) {
 	SetConsoleOutputCP(CP_UTF8);
 
@@ -177,14 +225,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 					}
 				}
 
-				nlohmann::json postRequestData;
-				postRequestData["components"] = components;
-				postRequestData["products"] = products;
-				postRequestData["componentTransactions"] = transactions;
-
 				string systemUUID = GetSystemUUID();
 
-				bool isRequestSuccess = sendData(env.getApiUrl() + "/sync", env.getApiKey(), systemUUID, postRequestData.dump());
+				bool isRequestSuccess = sendSyncDataInBatches(env, systemUUID, components, products, transactions);
 
 				if (isRequestSuccess) {
 					json newCursor;
