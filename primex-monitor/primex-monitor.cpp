@@ -138,20 +138,25 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 			json products;
 			json components;
 			json transactions;
+			bool shouldFetchComponents = false;
 
-			sqlite3_bind_int(stmtComponents, 1, cursor["componentId"].get<int>());
 			sqlite3_bind_int(stmtQueryProducts, 1, cursor["productId"].get<int>());
 			sqlite3_bind_int(stmtQueryTransactions, 1, cursor["transactionId"].get<int>());
 
-			componentsResult = db.queryDatabase(stmtComponents);
 			productsResult = db.queryDatabase(stmtQueryProducts);
 			transactionsResult = db.queryDatabase(stmtQueryTransactions);
 
-			sqlite3_reset(stmtComponents);
 			sqlite3_reset(stmtQueryProducts);
 			sqlite3_reset(stmtQueryTransactions);
 
-			Logger::log("Found " + to_string(componentsResult.size()) + " components, " + to_string(productsResult.size()) + " new products, " + to_string(transactionsResult.size()) + " new transactions");
+			shouldFetchComponents = !productsResult.empty() || !transactionsResult.empty();
+
+			if (shouldFetchComponents) {
+				componentsResult = db.queryDatabase(stmtComponents);
+				sqlite3_reset(stmtComponents);
+			}
+
+			Logger::log("Found " + (shouldFetchComponents ? to_string(componentsResult.size()) : "0") + " components, " + to_string(productsResult.size()) + " new products, " + to_string(transactionsResult.size()) + " new transactions");
 
 			if (componentsResult.size() > 0 || productsResult.size() > 0 || transactionsResult.size() > 0) {
 				for (const Row& row : componentsResult) {
@@ -186,7 +191,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 					newCursor["dbInstanceId"] = cursor["dbInstanceId"];
 					newCursor["productId"] = products.empty() || products.back()["id"].is_null() ? cursor["productId"] : products.back()["id"];
-					newCursor["componentId"] = components.empty() || components.back()["id"].is_null() ? cursor["componentId"] : components.back()["id"];
 					newCursor["transactionId"] = transactions.empty() || transactions.back()["id"].is_null() ? cursor["transactionId"] : transactions.back()["id"];
 
 					Cursor::setCursor(newCursor);

@@ -60,12 +60,6 @@ const string SQL_SELECT_COMPONENTS = R"(
 		'updated_at', updated_at
 	) AS component
 	FROM components
-	WHERE
-		EXISTS (
-			SELECT 1
-			FROM components c
-			WHERE c.id > ?
-		)
 	ORDER BY components.id ASC;
 )";
 

@@ -11,7 +11,6 @@ using json = nlohmann::json;
 
 const json Cursor::DEFAULT_CURSOR = {
 	{"productId", 0},
-	{"componentId", 0},
 	{"transactionId", 0},
 	{"hasCursor", true}
 };
@@ -66,7 +65,6 @@ json Cursor::getCursor() {
 
 	if (!cursor.contains("dbInstanceId")) missingProperties.push_back("dbInstanceId");
 	if (!cursor.contains("productId") || !cursor["productId"].is_number_integer()) missingProperties.push_back("productId");
-	if (!cursor.contains("componentId") || !cursor["componentId"].is_number_integer()) missingProperties.push_back("componentId");
 	if (!cursor.contains("transactionId") || !cursor["transactionId"].is_number_integer()) missingProperties.push_back("transactionId");
 
 	if (missingProperties.size() > 0) {
